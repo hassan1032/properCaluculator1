@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="container"></div>
+
+    <script>
+        var myWrapper = document.getElementById('container');
+        var decValue = true;
+        var storedResult = ''; // Variable to store the previous result
+
+        // Function to create divs for calculator buttons
+        function divCalc(divClass, btnInnerHTML) {
+            var div = document.createElement('div');
+            div.className = divClass;
+            div.innerHTML = btnInnerHTML;
+            return div;
+        }
+
+        // Array of calculator divs
+        var rowsCalc = [
+            divCalc('row1', '<button class="btnDel">AC</button><button class="btnOper" value="%">%</button><button class="btnOper" value="+">+</button><button class="btnNum" value=".">.</button>'),
+            divCalc('row2', '<button class="btnNum" value="7">7</button><button class="btnNum" value="8">8</button><button class="btnNum" value="9">9</button><button class="btnOper" value="-">-</button>'),
+            divCalc('row3', '<button class="btnNum" value="4">4</button><button class="btnNum" value="5">5</button><button class="btnNum" value="6">6</button><button class="btnOper" value="*">*</button>'),
+            divCalc('row4', '<button class="btnNum" value="1">1</button><button class="btnNum" value="2">2</button><button class="btnNum" value="3">3</button><button class="btnOper" value="/">/</button>'),
+            divCalc('row5', '<button class="btnNum" value="0">0</button><button class="btnEql" value="=">=</button><button class="btnBack">Backspace</button>')
+        ];
+
+        // Function to create divs for page
+        function divPage(divID) {
+            var div = document.createElement('div');
+            div.id = divID;
+            if(divID ==='result'){
+                div.innerHTML =0
+            }
+           
+            return div;
+        }
+
+        // Array of page divs
+        var rowsPage = [
+            divPage('result'),
+            divPage('main')
+        ];
+
+       
+        var docFragPage = document.createDocumentFragment();
+        for (var i = 0; i < rowsPage.length; i++) {
+            docFragPage.appendChild(rowsPage[i]);
+        }
+        myWrapper.appendChild(docFragPage);
+
+        var docFragCalc = document.createDocumentFragment();
+        for (var i = 0; i < rowsCalc.length; i++) {
+            docFragCalc.appendChild(rowsCalc[i]);
+        }
+        rowsPage[1].appendChild(docFragCalc); // appends all divs at once to 'main' div
+
+        var disable = false;
+
+        // Append event listener to body
+        document.body.addEventListener('click', function (e) {
+            // Event only triggered when pressed on buttons
+            if (e.target.tagName === 'BUTTON') {
+                // Variable for output
+                if (disable) {
+                    document.getElementById('result').innerHTML = 0;
+                    disable = false;
+                }
+                var output = document.getElementById('result').innerHTML;
+
+                // Triggered when 'Del' button is clicked
+                if (e.target.classList.contains("btnDel")) {
+                    document.getElementById('result').innerHTML = 0;
+                    decValue = true; // Reset decimal flag
+                }
+
+                // Triggered when numbers are clicked
+                if (e.target.classList.contains('btnNum')) {
+                    if(storedResult){
+                        storedResult = 0;
+                    }
+                    if (e.target.value === '.') {
+                        if (decValue) {
+                            document.getElementById('result').innerHTML += e.target.value;
+                            decValue = false; // Prevent further decimal points
+                        }
+                    } else {
+                        document.getElementById('result').innerHTML += e.target.value;
+                    }
+                }
+
+                // Triggered when operators are clicked
+                if (e.target.classList.contains('btnOper')) {
+                    // Operations on a list
+                    var charsToSearch = ["+", "-", "*", "/", "%", "."];
+                    // Check what was the last char
+                    var lastChar = document.getElementById('result').innerHTML.slice(-1);
+                    // If last char was a different operation, replace it with new
+                    if (e.target.value != lastChar) {
+                        if (charsToSearch.indexOf(lastChar) != -1) {
+                            var str = document.getElementById('result').innerHTML.slice(0, -1);
+                            str = str + e.target.value;
+                            document.getElementById('result').innerHTML = str;
+                            return;
+                        }
+                        if (lastChar === '%' && e.target.value === '%') {
+                            return; // If '%' is already there, don't append another
+                        }
+                    }
+                    switch (lastChar) {
+                        case '+':
+                        case '-':
+                        case '*':
+                        case '/':
+                        case '%':
+                        case '.':
+                            return;
+                    }
+                    document.getElementById('result').innerHTML += e.target.value;
+                    decValue = true; // Reset decimal flag when operator is clicked
+                }
+
+                // Triggered when backspace button is clicked
+                if (e.target.classList.contains('btnBack')) {
+                    var currentResult = document.getElementById('result').innerHTML;
+                    document.getElementById('result').innerHTML = currentResult.slice(0, -1);
+                }
+
+                // Triggered when equality button is clicked
+                if (e.target.classList.contains('btnEql')) {
+                    var expression = document.getElementById('result').innerHTML;
+                    if(expression.length === 0){
+                        return;
+                    }
+
+                    // Ensure that the expression doesn't end with an operator
+                    if (['+', '-', '*', '/', '%', '.'].includes(expression.slice(-1))) {
+                        expression = expression.slice(0, -1);
+                    }
+                    // Evaluate the expression
+                    var result = eval(expression);
+                    // Store the result
+                    storedResult = result;
+                    document.getElementById('result').innerHTML = result;
+                    disable = true;
+                }
+
+                if (storedResult && e.target.classList.contains('btnOper')) {
+                    // Check if the result is already displayed
+                    if (output === storedResult.toString()) {
+                        // Append the operator without appending the stored result
+                        document.getElementById('result').innerHTML = storedResult + e.target.value;
+                    } else {
+                        // Append the stored result followed by the operator
+                        document.getElementById('result').innerHTML = storedResult + e.target.value;
+                        // Reset stored result
+                        storedResult = 0;
+                    }
+                }
+            }
+        }, false);
+
+    </script>
+</body>
+
+</html>
