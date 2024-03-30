@@ -16,7 +16,7 @@
         var decValue = true;
         var storedResult = ''; // Variable to store the previous result
 
-        // Function to create divs for calculator buttons
+
         function divCalc(divClass, btnInnerHTML) {
             var div = document.createElement('div');
             div.className = divClass;
@@ -66,7 +66,7 @@
         document.body.addEventListener('click', function (e) {
 
             if (e.target.tagName === 'BUTTON') {
-                // Variable for output
+                
                 if (disable) {
                     document.getElementById('result').innerHTML = 0;
                     disable = false;
@@ -82,8 +82,10 @@
                     if (storedResult) {
                         storedResult = '';
                     }
+                    
                     if (e.target.value === '.') {
-                        if (decValue) {
+                        var output = document.getElementById('result').innerHTML;
+                        if (output === '' || !output.includes('.')) { // Check if the output is empty or doesn't already contain a decimal point
                             document.getElementById('result').innerHTML += e.target.value;
                             decValue = false; // Prevent further decimal points
                         }
@@ -91,6 +93,7 @@
                         document.getElementById('result').innerHTML += e.target.value;
                     }
                 }
+
 
                 if (e.target.classList.contains('btnOper')) {
                     var charsToSearch = ["+", "-", "*", "/", "%", "."];
@@ -156,48 +159,48 @@
             }
         }, false);
 
-        // The Function of Evalute ............Expression
         function evaluateExpression(expression) {
-    var operators = ['+', '-', '*', '/', '%'];
-    var nums = [];
-    var currentNum = '';
-    for (var i = 0; i < expression.length; i++) {
-        var char = expression[i];
-        if (operators.includes(char)) {
-            nums.push(currentNum);
-            nums.push(char);
-            currentNum = '';
-        } else {
-            currentNum += char;
+            var operators = ['+', '-', '*', '/', '%'];
+            var nums = [];
+            var currentNum = '';
+            for (var i = 0; i < expression.length; i++) {
+                var char = expression[i];
+                if (operators.includes(char)) {
+                    nums.push(parseFloat(currentNum));
+                    nums.push(char);
+                    currentNum = '';
+                } else {
+                    currentNum += char;
+                }
+            }
+            nums.push(parseFloat(currentNum)); // Push the last number
+            var result = nums[0]; // Initialize result with the first number
+            for (var j = 1; j < nums.length; j += 2) {
+                var num = nums[j + 1];
+                var op = nums[j];
+                switch (op) {
+                    case '+':
+                        result += num;
+                        break;
+                    case '-':
+                        result -= num;
+                        break;
+                    case '*':
+                        result *= num;
+                        break;
+                    case '/':
+                        result /= num;
+                        break;
+                    case '%':
+                        result %= num;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return result;
         }
-    }
-    nums.push(currentNum); // Push the last number
-    var result = parseFloat(nums[0]);
-    for (var j = 1; j < nums.length; j += 2) {
-        var num = parseFloat(nums[j + 1]);
-        var op = nums[j];
-        switch (op) {
-            case '+':
-                result += num;
-                break;
-            case '-':
-                result -= num;
-                break;
-            case '*':
-                result *= num;
-                break;
-            case '/':
-                result /= num;
-                break;
-            case '%':
-                result %= num;
-                break;
-            default:
-                break;
-        }
-    }
-    return result;
-}
+
 
     </script>
 </body>
@@ -385,4 +388,3 @@
 
 
  -->
-
