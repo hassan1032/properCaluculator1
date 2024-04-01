@@ -66,7 +66,7 @@
         document.body.addEventListener('click', function (e) {
 
             if (e.target.tagName === 'BUTTON') {
-                
+                // Variable for output
                 if (disable) {
                     document.getElementById('result').innerHTML = 0;
                     disable = false;
@@ -82,15 +82,19 @@
                     if (storedResult) {
                         storedResult = '';
                     }
-                    
+
                     if (e.target.value === '.') {
                         var output = document.getElementById('result').innerHTML;
-                        if (output === '' || !output.includes('.')) { // Check if the output is empty or doesn't already contain a decimal point
+                        if (output === '' || !output.includes('.')) { 
                             document.getElementById('result').innerHTML += e.target.value;
-                            decValue = false; // Prevent further decimal points
+                            decValue = false; 
                         }
                     } else {
-                        document.getElementById('result').innerHTML += e.target.value;
+                        if (output === '0') {
+                            document.getElementById('result').innerHTML = e.target.value;
+                        } else {
+                            document.getElementById('result').innerHTML += e.target.value;
+                        }
                     }
                 }
 
@@ -121,7 +125,7 @@
                             return;
                     }
                     document.getElementById('result').innerHTML += e.target.value;
-                    decValue = true; // Reset decimal flag when operator is clicked
+                    decValue = true;
                 }
 
                 if (e.target.classList.contains('btnBack')) {
@@ -150,7 +154,7 @@
                     if (output === storedResult.toString()) {
                         document.getElementById('result').innerHTML = storedResult + e.target.value;
                     } else {
-                        // Append the stored result followed by the operator
+
                         document.getElementById('result').innerHTML = storedResult + e.target.value;
                         // Reset stored result
                         storedResult = '';
@@ -165,19 +169,25 @@
             var currentNum = '';
             for (var i = 0; i < expression.length; i++) {
                 var char = expression[i];
-                if (operators.includes(char)) {
-                    nums.push(parseFloat(currentNum));
-                    nums.push(char);
-                    currentNum = '';
+                if (operators.includes(char) || char === '.') {
+                    if (currentNum !== '') {
+                        nums.push(parseFloat(currentNum));
+                        currentNum = '';
+                    }
+                    if (char !== '.') {
+                        nums.push(char);
+                    }
                 } else {
                     currentNum += char;
                 }
             }
-            nums.push(parseFloat(currentNum)); // Push the last number
-            var result = nums[0]; // Initialize result with the first number
+            if (currentNum !== '') {
+                nums.push(parseFloat(currentNum));
+            }
+            let result = nums[0];
             for (var j = 1; j < nums.length; j += 2) {
-                var num = nums[j + 1];
-                var op = nums[j];
+                num = nums[j + 1];
+                let op = nums[j];
                 switch (op) {
                     case '+':
                         result += num;
@@ -189,7 +199,11 @@
                         result *= num;
                         break;
                     case '/':
-                        result /= num;
+                        if (num !== 0) {
+                            result /= num;
+                        } else {
+                            return 'Error: Division by zero';
+                        }
                         break;
                     case '%':
                         result %= num;
