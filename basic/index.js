@@ -1,4 +1,3 @@
-
 var inputField = document.getElementById("result");
 var expression = [];
 var operators = ["+", "-", "*", "/", "%"];
@@ -6,12 +5,10 @@ var decimalPressed = false;
 var result = 0;
 var currentNum = 0;
 
-
-
 function evaluateExpression(expression) {
     let operators = ['*', '/', '%', '+', '-'];
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < operators.length; i++) {
         for (let j = 1; j < expression.length; j += 2) {
             if (expression[j] === operators[i]) {
                 let leftOperand = expression[j - 1];
@@ -31,23 +28,6 @@ function evaluateExpression(expression) {
                     case '%':
                         result = leftOperand % rightOperand;
                         break;
-                    default:
-                        break;
-                }
-                
-                expression.splice(j - 1, 3, result);
-                j -= 2; 
-            }
-        }
-    }
-    
-    for (let i = 3; i < operators.length; i++) {
-        for (let j = 1; j < expression.length; j += 2) {
-            if (expression[j] === operators[i]) {
-                let leftOperand = expression[j - 1];
-                let rightOperand = expression[j + 1];
-                let result;
-                switch (expression[j]) {
                     case '+':
                         result = leftOperand + rightOperand;
                         break;
@@ -63,10 +43,9 @@ function evaluateExpression(expression) {
             }
         }
     }
+    
     return expression[0];
 }
-
-
 
 document.body.addEventListener("click", function (event) {
     var target = event.target;
@@ -112,13 +91,11 @@ document.body.addEventListener("click", function (event) {
                 inputField.innerHTML === "" ||
                 operators.includes(inputField.innerHTML.slice(-1)) ||
                 inputField.innerHTML.slice(-1) === "-" ||
-                inputField.innerHTML.slice(-1) === "E" // This is to handle negative numbers in scientific notation
+                inputField.innerHTML.slice(-1) === "E" 
             ) {
-                // If the previous character is an operator or if the input field is empty, treat it as a negative number
                 inputField.innerHTML += value;
                 currentNum += value;
             } else {
-                // Otherwise, treat it as a subtraction operator
                 if (currentNum || currentNum === 0) expression.push(parseFloat(currentNum));
                 expression.push(value);
                 inputField.innerHTML += value;
@@ -163,42 +140,3 @@ document.body.addEventListener("click", function (event) {
         }
     }
 });
-
-
-
-
-
-
-// This is  Second Evaluate code  
-
-// // function evaluateExpression(expression) {
-// //   let result = expression[0];
-// //   for (var j = 1; j < expression.length; j += 2) {
-// //     let num = expression[j + 1];
-// //     let op = expression[j];
-// //     switch (op) {
-// //       case "+":
-// //         result += num;
-// //         break;
-// //       case "-":
-// //         result -= num;
-// //         break;
-// //       case "*":
-// //         result *= num;
-// //         break;
-// //       case "/":
-// //         if (num !== 0) {
-// //           result /= num;
-// //         } else {
-// //           return "Error: Division by zero";
-// //         }
-// //         break;
-// //       case "%":
-// //         result %= num;
-// //         break;
-// //       default:
-// //         break;
-// //     }
-// //   }
-// //   return result;
-// // }
